@@ -4,7 +4,7 @@ import SearchBar from './components/SearchBar';
 import SortFilterBar from './components/SortFilterBar';
 import BookGrid from './components/BookGrid';
 import { fetchBooks } from './api';
-import { filterByQuery, filterByDecade, sortBooks } from './utils';
+import { filterByQuery, filterByDecade, sortBooks, paginateBooks, PAGE_SIZE } from './utils';
 
 // --- localStorage helpers ---
 function loadFromStorage(key, fallback) {
@@ -36,6 +36,12 @@ export default function App() {
   const [error, setError] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Reset page to 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [query, sortOption, filterDecade]);
 
   // Persist readBooks to localStorage on every update
   useEffect(() => {
@@ -87,7 +93,7 @@ export default function App() {
 
   // Chain: filter by query → filter by decade → sort
   // Then optionally filter to favorites only
-  const processedBooks = useMemo(() => {
+  const filteredBooks = useMemo(() => {
     let result = filterByQuery(books, query);
     result = filterByDecade(result, filterDecade);
     result = sortBooks(result, sortOption);
@@ -98,6 +104,12 @@ export default function App() {
 
     return result;
   }, [books, query, sortOption, filterDecade, showFavoritesOnly, favorites]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredBooks.length / PAGE_SIZE));
+  const paginatedBooks = useMemo(
+    () => paginateBooks(filteredBooks, currentPage),
+    [filteredBooks, currentPage]
+  );
 
   return (
     <div className={`app ${darkMode ? 'dark' : 'light'}`}>
@@ -117,7 +129,7 @@ export default function App() {
           onFilterChange={setFilterDecade}
         />
         <BookGrid
-          books={processedBooks}
+          books={paginatedBooks}
           loading={loading}
           error={error}
           hasSearched={hasSearched}
@@ -128,6 +140,27 @@ export default function App() {
           onToggleRead={handleToggleRead}
           onToggleFavorite={handleToggleFavorite}
         />
+        {hasSearched && !loading && !error && filteredBooks.length > 0 && (
+          <div className="pagination">
+            <button
+              className="pagination-btn"
+              disabled={currentPage <= 1}
+              onClick={() => setCurrentPage((p) => p - 1)}
+            >
+              ← Previous
+            </button>
+            <span className="pagination-label">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              className="pagination-btn"
+              disabled={currentPage >= totalPages}
+              onClick={() => setCurrentPage((p) => p + 1)}
+            >
+              Next →
+            </button>
+          </div>
+        )}
       </main>
     </div>
   );
