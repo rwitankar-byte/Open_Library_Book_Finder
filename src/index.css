@@ -1,0 +1,600 @@
+/* ============================================
+   Open Library Book Finder — index.css
+   Premium, responsive, dark/light mode design
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ---------- CSS Variables ---------- */
+:root {
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.12);
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- Dark palette (default) --- */
+.dark {
+  --bg: #0b0f19;
+  --bg-primary: #0b0f19;
+  --bg-secondary: #141a2a;
+  --card-bg: #1a2138;
+  --bg-card: #1a2138;
+  --bg-card-hover: #222d48;
+  --bg-input: #1a2138;
+  --border: #283352;
+  --text: #e8ecf4;
+  --text-primary: #e8ecf4;
+  --text-secondary: #8b95b0;
+  --text-muted: #5a6580;
+  --accent: #6366f1;
+  --accent-hover: #818cf8;
+  --accent-glow: rgba(99, 102, 241, 0.25);
+  --danger: #ef4444;
+  --success: #22c55e;
+  --gradient-hero: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+}
+
+/* --- Light palette --- */
+.light {
+  --bg: #f5f7fb;
+  --bg-primary: #f5f7fb;
+  --bg-secondary: #ffffff;
+  --card-bg: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f0f2f8;
+  --bg-input: #f0f2f8;
+  --border: #dfe3ec;
+  --text: #1a1d2b;
+  --text-primary: #1a1d2b;
+  --text-secondary: #5a6580;
+  --text-muted: #9ca3b8;
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+  --accent-glow: rgba(99, 102, 241, 0.15);
+  --danger: #dc2626;
+  --success: #16a34a;
+  --gradient-hero: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+}
+
+/* ---------- Reset ---------- */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---------- App Shell ---------- */
+.app {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background var(--transition), color var(--transition);
+}
+
+/* ---------- Navbar ---------- */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 68px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.navbar-logo {
+  font-size: 1.6rem;
+}
+
+.navbar-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  background: var(--gradient-hero);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.navbar-tab {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--font-family);
+  cursor: pointer;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition), background var(--transition);
+}
+
+.navbar-tab:hover {
+  color: var(--text-primary);
+  background: var(--bg-card);
+}
+
+.navbar-tab.active {
+  color: var(--accent);
+  background: var(--accent-glow);
+}
+
+.navbar-read-count {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  padding: 0.3rem 0.7rem;
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.navbar-read-count strong {
+  color: var(--accent);
+}
+
+.navbar-dark-toggle {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  font-size: 1.15rem;
+  display: grid;
+  place-items: center;
+  transition: background var(--transition), border-color var(--transition), transform 0.2s;
+}
+
+.navbar-dark-toggle:hover {
+  background: var(--bg-card-hover);
+  transform: rotate(20deg) scale(1.1);
+}
+
+/* ---------- Main Content ---------- */
+.main-content {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* ---------- Search Bar ---------- */
+.search-bar {
+  margin-bottom: 1.5rem;
+}
+
+.search-bar-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.75rem;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.search-bar-inner:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.search-icon {
+  font-size: 1.15rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 1rem;
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  padding: 0.5rem 0;
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.search-button {
+  flex-shrink: 0;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 1.5rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-family);
+  transition: background var(--transition), transform 0.15s;
+}
+
+.search-button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.search-button:active {
+  transform: translateY(0);
+}
+
+/* ---------- Sort / Filter Bar ---------- */
+.sort-filter-bar {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.sort-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sort-filter-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.sort-filter-group select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  font-size: 0.88rem;
+  font-family: var(--font-family);
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238b95b0' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.6rem center;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.sort-filter-group select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+/* ---------- Book Grid ---------- */
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+/* ---------- Book Card ---------- */
+.book-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  display: flex;
+  flex-direction: column;
+}
+
+.book-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent);
+}
+
+.book-card-cover {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  background: var(--bg-secondary);
+  position: relative;
+}
+
+.book-card-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.book-card:hover .book-card-cover img {
+  transform: scale(1.05);
+}
+
+.book-card-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-card));
+}
+
+.placeholder-icon {
+  font-size: 2.5rem;
+  opacity: 0.4;
+}
+
+.placeholder-text {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.book-card-info {
+  padding: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.book-card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--text-primary);
+}
+
+.book-card-author {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.book-card-year {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: auto;
+}
+
+.book-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0 1rem 1rem;
+}
+
+.book-card-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-family: var(--font-family);
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: background var(--transition), transform 0.15s, border-color var(--transition), color var(--transition);
+}
+
+.book-card-btn:hover:not(:disabled) {
+  background: var(--bg-card-hover);
+  transform: scale(1.04);
+}
+
+.book-card-btn.active {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+  color: var(--accent);
+}
+
+.book-card-btn:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.read-btn {
+  flex: 1;
+}
+
+.read-btn.active {
+  border-color: var(--success);
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--success);
+}
+
+.fav-btn {
+  width: 38px;
+  flex-shrink: 0;
+  font-size: 1.15rem;
+}
+
+.fav-btn.active {
+  color: var(--danger);
+  border-color: var(--danger);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* ---------- Grid Status (loading / error / empty / welcome) ---------- */
+.book-grid-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 5rem 2rem;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.book-grid-status p {
+  font-size: 1.05rem;
+  font-weight: 500;
+  max-width: 420px;
+  line-height: 1.6;
+}
+
+.book-grid-status.error p {
+  color: var(--danger);
+}
+
+.book-grid-status.empty p {
+  color: var(--text-muted);
+}
+
+.status-icon {
+  font-size: 3rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* --- Hero Welcome --- */
+.hero-welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.hero-emoji {
+  font-size: 4rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+.hero-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  background: var(--gradient-hero);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.hero-subtitle {
+  font-size: 1rem;
+  color: var(--text-muted);
+  max-width: 400px;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+/* ---------- Spinner ---------- */
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 1rem;
+    height: 60px;
+  }
+
+  .navbar-title {
+    font-size: 1rem;
+  }
+
+  .main-content {
+    padding: 1.25rem 1rem 3rem;
+  }
+
+  .book-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+  }
+
+  .sort-filter-bar {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-left {
+    gap: 0.4rem;
+  }
+
+  .navbar-title {
+    font-size: 0.88rem;
+  }
+
+  .navbar-tab {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.5rem;
+  }
+
+  .navbar-read-count {
+    font-size: 0.72rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .book-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .search-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+}
