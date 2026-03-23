@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import Navbar from './components/Navbar';
 import SearchBar from './components/SearchBar';
 import SortFilterBar from './components/SortFilterBar';
