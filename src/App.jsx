@@ -66,7 +66,7 @@ export default function App() {
     try {
       const results = await fetchBooks(searchQuery);
       setBooks(results);
-    } catch (err) {
+    } catch {
       setError('Something went wrong. Please try again.');
       setBooks([]);
     } finally {

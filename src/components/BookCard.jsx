@@ -1,4 +1,3 @@
-import React from 'react';
 import { getCoverUrl } from '../utils';
 
 export default function BookCard({

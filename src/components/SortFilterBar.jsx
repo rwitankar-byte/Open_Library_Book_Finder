@@ -1,4 +1,3 @@
-import React from 'react';
 
 const SORT_OPTIONS = [
   { value: '', label: 'Default' },
