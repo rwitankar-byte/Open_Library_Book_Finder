@@ -1,26 +1,20 @@
-const BASE_URL = 'https://openlibrary.org/search.json';
-
-/**
- * Fetch books from the Open Library Search API.
- * @param {string} query - The search query string.
- * @returns {Promise<Array<{id: string, title: string, author: string, year: number|null, coverId: number|null}>>}
- */
-export async function fetchBooks(query) {
-  const response = await fetch(
-    `${BASE_URL}?q=${encodeURIComponent(query)}&limit=20`
-  );
+// Fetches books from Open Library based on a search term
+export async function fetchBooks(searchTerm) {
+  const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(searchTerm)}&limit=20`;
+  const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error(`API request failed with status ${response.status}`);
+    throw new Error('Failed to fetch books');
   }
 
   const data = await response.json();
 
-  return (data.docs || []).map((doc) => ({
-    id: doc.key || `unknown-${Math.random()}`,
-    title: doc.title || 'Untitled',
-    author: doc.author_name ? doc.author_name[0] : 'Unknown Author',
-    year: doc.first_publish_year || null,
-    coverId: doc.cover_i || null,
+  // Turn each result into a simple object we actually need
+  return data.docs.map((book) => ({
+    id: book.key,
+    title: book.title || 'No Title',
+    author: book.author_name?.[0] || 'Unknown Author',
+    year: book.first_publish_year || null,
+    coverId: book.cover_i || null,
   }));
 }

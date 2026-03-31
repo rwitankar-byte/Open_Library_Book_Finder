@@ -2,39 +2,30 @@ import { useState, useEffect, useRef } from 'react';
 
 export default function SearchBar({ onSearch }) {
   const [input, setInput] = useState('');
-  const debounceRef = useRef(null);
+  const timerRef = useRef(null);
 
-  // Debounce: fire onSearch 300ms after user stops typing
+  // Auto-search 300ms after the user stops typing
   useEffect(() => {
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
+    clearTimeout(timerRef.current);
 
-    const trimmed = input.trim();
-    if (trimmed) {
-      debounceRef.current = setTimeout(() => {
-        onSearch(trimmed);
+    if (input.trim()) {
+      timerRef.current = setTimeout(() => {
+        onSearch(input.trim());
       }, 300);
     }
 
-    return () => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
-    };
+    // Cleanup: clear the timer if input changes before 300ms
+    return () => clearTimeout(timerRef.current);
   }, [input, onSearch]);
 
-  const handleSubmit = (e) => {
+  // Immediate search when user presses Enter or clicks Search
+  function handleSubmit(e) {
     e.preventDefault();
-    // Immediate search on Enter
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
+    clearTimeout(timerRef.current);
+    if (input.trim()) {
+      onSearch(input.trim());
     }
-    const trimmed = input.trim();
-    if (trimmed) {
-      onSearch(trimmed);
-    }
-  };
+  }
 
   return (
     <form className="search-bar" onSubmit={handleSubmit}>

@@ -1,70 +1,56 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Navbar from './components/Navbar';
 import SearchBar from './components/SearchBar';
 import SortFilterBar from './components/SortFilterBar';
 import BookGrid from './components/BookGrid';
 import { fetchBooks } from './api';
-import { filterByQuery, filterByDecade, sortBooks, paginateBooks, PAGE_SIZE } from './utils';
-
-// --- localStorage helpers ---
-function loadFromStorage(key, fallback) {
-  try {
-    const stored = localStorage.getItem(key);
-    return stored ? JSON.parse(stored) : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-function saveToStorage(key, value) {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch {
-    // silently ignore quota errors
-  }
-}
+import { filterByQuery, filterByDecade, sortBooks, getPage, PAGE_SIZE } from './utils';
 
 export default function App() {
-  const [books, setBooks] = useState([]);
-  const [query, setQuery] = useState('');
-  const [sortOption, setSortOption] = useState('');
-  const [filterDecade, setFilterDecade] = useState('all');
-  const [darkMode, setDarkMode] = useState(() => loadFromStorage('darkMode', true));
-  const [readBooks, setReadBooks] = useState(() => loadFromStorage('readBooks', []));
-  const [favorites, setFavorites] = useState(() => loadFromStorage('favorites', []));
+  // --- Core data ---
+  const [books, setBooks] = useState([]);          // raw results from API
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [hasSearched, setHasSearched] = useState(false);
-  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+
+  // --- Search / filter / sort state ---
+  const [query, setQuery] = useState('');
+  const [sortOption, setSortOption] = useState('');
+  const [filterDecade, setFilterDecade] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Reset page to 1 when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [query, sortOption, filterDecade]);
+  // --- User preferences (saved to localStorage) ---
+  const [darkMode, setDarkMode] = useState(() => {
+    return JSON.parse(localStorage.getItem('darkMode') ?? 'true');
+  });
+  const [readBooks, setReadBooks] = useState(() => {
+    return JSON.parse(localStorage.getItem('readBooks') ?? '[]');
+  });
+  const [favorites, setFavorites] = useState(() => {
+    return JSON.parse(localStorage.getItem('favorites') ?? '[]');
+  });
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
 
-  // Persist readBooks to localStorage on every update
-  useEffect(() => {
-    saveToStorage('readBooks', readBooks);
-  }, [readBooks]);
+  // Save preferences whenever they change
+  useEffect(() => { localStorage.setItem('darkMode', JSON.stringify(darkMode)); }, [darkMode]);
+  useEffect(() => { localStorage.setItem('readBooks', JSON.stringify(readBooks)); }, [readBooks]);
+  useEffect(() => { localStorage.setItem('favorites', JSON.stringify(favorites)); }, [favorites]);
 
-  // Persist favorites to localStorage on every update
-  useEffect(() => {
-    saveToStorage('favorites', favorites);
-  }, [favorites]);
+  // Reset to page 1 when the user changes filters
+  useEffect(() => { setCurrentPage(1); }, [query, sortOption, filterDecade]);
 
-  // Persist dark mode preference
-  useEffect(() => {
-    saveToStorage('darkMode', darkMode);
-  }, [darkMode]);
-
-  const handleSearch = useCallback(async (searchQuery) => {
-    setQuery(searchQuery);
+  // --- Search handler ---
+  // Wrapped in useCallback so the function reference doesn't change on every render.
+  // Without this, SearchBar's useEffect sees a "new" onSearch function after every
+  // state update, re-triggers the effect, calls the API again — infinite loop.
+  const handleSearch = useCallback(async (searchTerm) => {
+    setQuery(searchTerm);
     setLoading(true);
     setError('');
     setHasSearched(true);
+
     try {
-      const results = await fetchBooks(searchQuery);
+      const results = await fetchBooks(searchTerm);
       setBooks(results);
     } catch {
       setError('Something went wrong. Please try again.');
@@ -72,54 +58,45 @@ export default function App() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, []); // empty array = create this function once, never recreate it
 
-  const handleToggleRead = (bookId) => {
-    setReadBooks((prev) =>
-      prev.includes(bookId) ? prev : [...prev, bookId]
-    );
-  };
-
-  const handleToggleFavorite = (bookId) => {
-    setFavorites((prev) =>
-      prev.includes(bookId)
-        ? prev.filter((id) => id !== bookId)
-        : [...prev, bookId]
-    );
-  };
-
-  // Use .reduce() to compute the total read count
-  const readCount = readBooks.reduce((count) => count + 1, 0);
-
-  // Chain: filter by query → filter by decade → sort
-  // Then optionally filter to favorites only
-  const filteredBooks = useMemo(() => {
-    let result = filterByQuery(books, query);
-    result = filterByDecade(result, filterDecade);
-    result = sortBooks(result, sortOption);
-
-    if (showFavoritesOnly) {
-      result = result.filter((book) => favorites.includes(book.id));
+  // --- Mark a book as read (one-way toggle) ---
+  function markAsRead(bookId) {
+    if (!readBooks.includes(bookId)) {
+      setReadBooks([...readBooks, bookId]);
     }
+  }
 
-    return result;
-  }, [books, query, sortOption, filterDecade, showFavoritesOnly, favorites]);
+  // --- Toggle a book in/out of favorites ---
+  function toggleFavorite(bookId) {
+    if (favorites.includes(bookId)) {
+      setFavorites(favorites.filter((id) => id !== bookId));
+    } else {
+      setFavorites([...favorites, bookId]);
+    }
+  }
 
-  const totalPages = Math.max(1, Math.ceil(filteredBooks.length / PAGE_SIZE));
-  const paginatedBooks = useMemo(
-    () => paginateBooks(filteredBooks, currentPage),
-    [filteredBooks, currentPage]
-  );
+  // --- Apply filters and sort to the book list ---
+  let displayBooks = filterByQuery(books, query);
+  displayBooks = filterByDecade(displayBooks, filterDecade);
+  displayBooks = sortBooks(displayBooks, sortOption);
+  if (showFavoritesOnly) {
+    displayBooks = displayBooks.filter((book) => favorites.includes(book.id));
+  }
+
+  const totalPages = Math.max(1, Math.ceil(displayBooks.length / PAGE_SIZE));
+  const booksOnPage = getPage(displayBooks, currentPage);
 
   return (
     <div className={`app ${darkMode ? 'dark' : 'light'}`}>
       <Navbar
         darkMode={darkMode}
-        toggleDarkMode={() => setDarkMode((prev) => !prev)}
-        readCount={readCount}
+        toggleDarkMode={() => setDarkMode(!darkMode)}
+        readCount={readBooks.length}
         showFavoritesOnly={showFavoritesOnly}
-        toggleShowFavorites={() => setShowFavoritesOnly((prev) => !prev)}
+        toggleShowFavorites={() => setShowFavoritesOnly(!showFavoritesOnly)}
       />
+
       <main className="main-content">
         <SearchBar onSearch={handleSearch} />
         <SortFilterBar
@@ -129,7 +106,7 @@ export default function App() {
           onFilterChange={setFilterDecade}
         />
         <BookGrid
-          books={paginatedBooks}
+          books={booksOnPage}
           loading={loading}
           error={error}
           hasSearched={hasSearched}
@@ -137,15 +114,17 @@ export default function App() {
           showFavoritesOnly={showFavoritesOnly}
           readBooks={readBooks}
           favorites={favorites}
-          onToggleRead={handleToggleRead}
-          onToggleFavorite={handleToggleFavorite}
+          onMarkAsRead={markAsRead}
+          onToggleFavorite={toggleFavorite}
         />
-        {hasSearched && !loading && !error && filteredBooks.length > 0 && (
+
+        {/* Pagination — only show when there are results */}
+        {hasSearched && !loading && !error && displayBooks.length > PAGE_SIZE && (
           <div className="pagination">
             <button
               className="pagination-btn"
-              disabled={currentPage <= 1}
-              onClick={() => setCurrentPage((p) => p - 1)}
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(currentPage - 1)}
             >
               ← Previous
             </button>
@@ -154,8 +133,8 @@ export default function App() {
             </span>
             <button
               className="pagination-btn"
-              disabled={currentPage >= totalPages}
-              onClick={() => setCurrentPage((p) => p + 1)}
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(currentPage + 1)}
             >
               Next →
             </button>

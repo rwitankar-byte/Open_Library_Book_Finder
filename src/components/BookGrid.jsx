@@ -1,4 +1,3 @@
-
 import BookCard from './BookCard';
 
 export default function BookGrid({
@@ -10,9 +9,10 @@ export default function BookGrid({
   showFavoritesOnly,
   readBooks,
   favorites,
-  onToggleRead,
+  onMarkAsRead,
   onToggleFavorite,
 }) {
+  // Show a loading spinner while fetching
   if (loading) {
     return (
       <div className="book-grid-status">
@@ -22,6 +22,7 @@ export default function BookGrid({
     );
   }
 
+  // Show error message if the fetch failed
   if (error) {
     return (
       <div className="book-grid-status error">
@@ -31,7 +32,7 @@ export default function BookGrid({
     );
   }
 
-  // Favorites tab empty
+  // Favorites tab is open but nothing is saved yet
   if (showFavoritesOnly && books.length === 0) {
     return (
       <div className="book-grid-status empty">
@@ -41,17 +42,17 @@ export default function BookGrid({
     );
   }
 
-  // Search returned nothing
+  // Search returned no results
   if (hasSearched && books.length === 0) {
     return (
       <div className="book-grid-status empty">
         <span className="status-icon">📭</span>
-        <p>No books found for &lsquo;{query}&rsquo;. Try a different search.</p>
+        <p>No books found for "{query}". Try a different search.</p>
       </div>
     );
   }
 
-  // No search yet — hero welcome
+  // Welcome screen before any search
   if (!hasSearched) {
     return (
       <div className="book-grid-status welcome">
@@ -66,6 +67,7 @@ export default function BookGrid({
     );
   }
 
+  // Render the grid of book cards
   return (
     <div className="book-grid">
       {books.map((book) => (
@@ -78,7 +80,7 @@ export default function BookGrid({
           bookId={book.id}
           isRead={readBooks.includes(book.id)}
           isFavorite={favorites.includes(book.id)}
-          onToggleRead={onToggleRead}
+          onMarkAsRead={onMarkAsRead}
           onToggleFavorite={onToggleFavorite}
         />
       ))}

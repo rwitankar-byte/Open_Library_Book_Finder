@@ -1,86 +1,43 @@
-/**
- * Open Library Book Finder — Utility Functions
- * All functions are pure and use Array HOFs only (no for/while loops).
- */
-
+// How many books to show per page
 export const PAGE_SIZE = 20;
 
-/**
- * Paginate an array of books using .slice().
- * @param {Array} books
- * @param {number} page - 1-indexed page number
- * @param {number} pageSize
- * @returns {Array}
- */
-export function paginateBooks(books, page, pageSize = PAGE_SIZE) {
-  const start = (page - 1) * pageSize;
-  return books.slice(start, start + pageSize);
-}
-
-
-/**
- * Get the cover image URL for a given cover ID.
- * @param {number|null} coverId
- * @param {'S'|'M'|'L'} size
- * @returns {string|null}
- */
-export function getCoverUrl(coverId, size = 'M') {
+// Returns the cover image URL or null if no cover
+export function getCoverUrl(coverId) {
   if (!coverId) return null;
-  return `https://covers.openlibrary.org/b/id/${coverId}-${size}.jpg`;
+  return `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`;
 }
 
-/**
- * Filter books by title or author matching the query (case-insensitive).
- * Uses .filter() — no for/while loops.
- * @param {Array} books
- * @param {string} query
- * @returns {Array}
- */
+// Filter books whose title or author includes the search text
 export function filterByQuery(books, query) {
-  if (!query || !query.trim()) return books;
-  const lower = query.toLowerCase();
+  if (!query.trim()) return books;
+  const search = query.toLowerCase();
   return books.filter(
     (book) =>
-      book.title.toLowerCase().includes(lower) ||
-      book.author.toLowerCase().includes(lower)
+      book.title.toLowerCase().includes(search) ||
+      book.author.toLowerCase().includes(search)
   );
 }
 
-/**
- * Filter books by decade.
- * Uses .filter() — no for/while loops.
- * @param {Array} books
- * @param {string} decade - e.g. "1990s", "2000s", "2010s", "2020s", or "all"
- * @returns {Array}
- */
+// Filter books that were first published in a given decade (e.g. "1990s")
 export function filterByDecade(books, decade) {
-  if (!decade || decade === 'all') return books;
-  const decadeStart = parseInt(decade, 10);
-  const decadeEnd = decadeStart + 9;
-  return books.filter(
-    (book) => book.year && book.year >= decadeStart && book.year <= decadeEnd
-  );
+  if (decade === 'all') return books;
+  const start = parseInt(decade);
+  const end = start + 9;
+  return books.filter((book) => book.year >= start && book.year <= end);
 }
 
-/**
- * Sort books by the given option.
- * Uses .sort() on a shallow copy — no for/while loops.
- * @param {Array} books
- * @param {string} sortOption - "year-desc", "year-asc", "title-asc", "title-desc"
- * @returns {Array}
- */
-export function sortBooks(books, sortOption) {
-  const sorted = [...books];
-  switch (sortOption) {
-    case 'title-asc':
-      return sorted.sort((a, b) => a.title.localeCompare(b.title));
-    case 'title-desc':
-      return sorted.sort((a, b) => b.title.localeCompare(a.title));
-    case 'year-asc':
-      return sorted.sort((a, b) => (a.year || 0) - (b.year || 0));
-    case 'year-desc':
-      return sorted.sort((a, b) => (b.year || 0) - (a.year || 0));
-    default:
-      return sorted;
-  }
+// Sort books by title or year
+export function sortBooks(books, option) {
+  const list = [...books]; // don't mutate the original
+  if (option === 'title-asc') return list.sort((a, b) => a.title.localeCompare(b.title));
+  if (option === 'title-desc') return list.sort((a, b) => b.title.localeCompare(a.title));
+  if (option === 'year-asc') return list.sort((a, b) => (a.year || 0) - (b.year || 0));
+  if (option === 'year-desc') return list.sort((a, b) => (b.year || 0) - (a.year || 0));
+  return list;
+}
+
+// Return just the books for the current page
+export function getPage(books, page) {
+  const start = (page - 1) * PAGE_SIZE;
+  return books.slice(start, start + PAGE_SIZE);
 }
