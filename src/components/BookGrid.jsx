@@ -7,12 +7,9 @@ export default function BookGrid({
   hasSearched,
   query,
   showFavoritesOnly,
-  readBooks,
   favorites,
-  onMarkAsRead,
   onToggleFavorite,
 }) {
-  // Show a loading spinner while fetching
   if (loading) {
     return (
       <div className="book-grid-status">
@@ -22,7 +19,6 @@ export default function BookGrid({
     );
   }
 
-  // Show error message if the fetch failed
   if (error) {
     return (
       <div className="book-grid-status error">
@@ -32,7 +28,6 @@ export default function BookGrid({
     );
   }
 
-  // Favorites tab is open but nothing is saved yet
   if (showFavoritesOnly && books.length === 0) {
     return (
       <div className="book-grid-status empty">
@@ -42,7 +37,6 @@ export default function BookGrid({
     );
   }
 
-  // Search returned no results
   if (hasSearched && books.length === 0) {
     return (
       <div className="book-grid-status empty">
@@ -52,37 +46,45 @@ export default function BookGrid({
     );
   }
 
-  // Welcome screen before any search
   if (!hasSearched) {
     return (
-      <div className="book-grid-status welcome">
-        <div className="hero-welcome">
-          <span className="hero-emoji">📚</span>
-          <h2 className="hero-title">Search for any book ever written</h2>
-          <p className="hero-subtitle">
-            Explore millions of titles from the Open Library. Search by title, author, or topic.
-          </p>
+      <div className="hero animate-in">
+        <p className="hero-eyebrow">Powered by Open Library · 20M+ Books</p>
+        <h2 className="hero-headline">
+          Discover Your Next<br /><span>Favorite Book</span>
+        </h2>
+        <p className="hero-sub">
+          Search millions of titles and save favorites — all in one beautifully designed app.
+        </p>
+        <div className="hero-ctas">
+          <button className="btn-primary" onClick={() => document.querySelector('.search-input')?.focus()}>
+            Start Exploring →
+          </button>
+          <button className="btn-ghost">Browse Trending</button>
+        </div>
+        <div className="hero-stats">
+          <div className="stat-item"><div className="stat-num">20M+</div><div className="stat-label">Books Available</div></div>
+          <div className="stat-item"><div className="stat-num">500K+</div><div className="stat-label">Authors</div></div>
+          <div className="stat-item"><div className="stat-num">100+</div><div className="stat-label">Languages</div></div>
         </div>
       </div>
     );
   }
 
-  // Render the grid of book cards
   return (
     <div className="book-grid">
       {books.map((book) => (
-        <BookCard
-          key={book.id}
-          title={book.title}
-          author={book.author}
-          year={book.year}
-          coverId={book.coverId}
-          bookId={book.id}
-          isRead={readBooks.includes(book.id)}
-          isFavorite={favorites.includes(book.id)}
-          onMarkAsRead={onMarkAsRead}
-          onToggleFavorite={onToggleFavorite}
-        />
+        <div key={book.id} className="animate-in">
+          <BookCard
+            title={book.title}
+            author={book.author}
+            year={book.year}
+            coverId={book.coverId}
+            bookId={book.id}
+            isFavorite={favorites.includes(book.id)}
+            onToggleFavorite={onToggleFavorite}
+          />
+        </div>
       ))}
     </div>
   );

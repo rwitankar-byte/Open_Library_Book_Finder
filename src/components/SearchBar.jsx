@@ -4,21 +4,16 @@ export default function SearchBar({ onSearch }) {
   const [input, setInput] = useState('');
   const timerRef = useRef(null);
 
-  // Auto-search 300ms after the user stops typing
   useEffect(() => {
     clearTimeout(timerRef.current);
-
     if (input.trim()) {
       timerRef.current = setTimeout(() => {
         onSearch(input.trim());
       }, 300);
     }
-
-    // Cleanup: clear the timer if input changes before 300ms
     return () => clearTimeout(timerRef.current);
   }, [input, onSearch]);
 
-  // Immediate search when user presses Enter or clicks Search
   function handleSubmit(e) {
     e.preventDefault();
     clearTimeout(timerRef.current);
@@ -34,12 +29,12 @@ export default function SearchBar({ onSearch }) {
         <input
           type="text"
           className="search-input"
-          placeholder="Search for books…"
+          placeholder="Search 20 million books by title, author, or topic…"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           aria-label="Search books"
         />
-        <button type="submit" className="search-button">
+        <button type="submit" className="search-button btn-primary">
           Search
         </button>
       </div>

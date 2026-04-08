@@ -19,23 +19,26 @@ const DECADE_OPTIONS = [
 
 export default function SortFilterBar({ sortOption, filterDecade, onSortChange, onFilterChange }) {
   return (
-    <div className="sort-filter-bar">
-      <div className="sort-filter-group">
-        <label htmlFor="sort-select">Sort by</label>
-        <select id="sort-select" value={sortOption} onChange={(e) => onSortChange(e.target.value)}>
-          {SORT_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>{opt.label}</option>
-          ))}
-        </select>
-      </div>
+    <div className="sort-filter-bar-wrapper">
+      <span className="sort-filter-eyebrow">Filters</span>
+      <div className="sort-filter-bar">
+        <div className="sort-filter-group">
+          <label htmlFor="sort-select">Sort by</label>
+          <select id="sort-select" value={sortOption} onChange={(e) => onSortChange(e.target.value)}>
+            {SORT_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+        </div>
 
-      <div className="sort-filter-group">
-        <label htmlFor="filter-select">Decade</label>
-        <select id="filter-select" value={filterDecade} onChange={(e) => onFilterChange(e.target.value)}>
-          {DECADE_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>{opt.label}</option>
-          ))}
-        </select>
+        <div className="sort-filter-group">
+          <label htmlFor="filter-select">Decade</label>
+          <select id="filter-select" value={filterDecade} onChange={(e) => onFilterChange(e.target.value)}>
+            {DECADE_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+        </div>
       </div>
     </div>
   );

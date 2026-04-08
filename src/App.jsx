@@ -23,9 +23,6 @@ export default function App() {
   const [darkMode, setDarkMode] = useState(() => {
     return JSON.parse(localStorage.getItem('darkMode') ?? 'true');
   });
-  const [readBooks, setReadBooks] = useState(() => {
-    return JSON.parse(localStorage.getItem('readBooks') ?? '[]');
-  });
   const [favorites, setFavorites] = useState(() => {
     return JSON.parse(localStorage.getItem('favorites') ?? '[]');
   });
@@ -33,7 +30,6 @@ export default function App() {
 
   // Save preferences whenever they change
   useEffect(() => { localStorage.setItem('darkMode', JSON.stringify(darkMode)); }, [darkMode]);
-  useEffect(() => { localStorage.setItem('readBooks', JSON.stringify(readBooks)); }, [readBooks]);
   useEffect(() => { localStorage.setItem('favorites', JSON.stringify(favorites)); }, [favorites]);
 
   // Reset to page 1 when the user changes filters
@@ -60,13 +56,6 @@ export default function App() {
     }
   }, []); // empty array = create this function once, never recreate it
 
-  // --- Mark a book as read (one-way toggle) ---
-  function markAsRead(bookId) {
-    if (!readBooks.includes(bookId)) {
-      setReadBooks([...readBooks, bookId]);
-    }
-  }
-
   // --- Toggle a book in/out of favorites ---
   function toggleFavorite(bookId) {
     if (favorites.includes(bookId)) {
@@ -92,7 +81,6 @@ export default function App() {
       <Navbar
         darkMode={darkMode}
         toggleDarkMode={() => setDarkMode(!darkMode)}
-        readCount={readBooks.length}
         showFavoritesOnly={showFavoritesOnly}
         toggleShowFavorites={() => setShowFavoritesOnly(!showFavoritesOnly)}
       />
@@ -112,9 +100,7 @@ export default function App() {
           hasSearched={hasSearched}
           query={query}
           showFavoritesOnly={showFavoritesOnly}
-          readBooks={readBooks}
           favorites={favorites}
-          onMarkAsRead={markAsRead}
           onToggleFavorite={toggleFavorite}
         />
 

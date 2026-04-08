@@ -10,10 +10,9 @@ A modern, responsive React web application that lets you explore millions of boo
   - Sort results by publication year (Newest/Oldest) or alphabetically by title (A-Z/Z-A).
   - Purely powered by JavaScript array Higher-Order Functions (HOFs).
 - **Pagination**: Browse through search results effortlessly with built-in pagination (20 books per page).
-- **Reading Goal Tracker**: Mark books as "✓ I've Read This" and track your total read count in the navigation bar.
 - **Favorites System**: Heart (♥) books you love and access them rapidly via the dedicated "♥ Favorites" tab.
 - **Dark/Light Mode**: Beautifully styled themes. Your preference is automatically saved.
-- **Persistent State**: Your reading list, favorites list, and dark mode preference are saved to `localStorage` so they never disappear on refresh.
+- **Persistent State**: Your favorites list and dark mode preference are saved to `localStorage` so they never disappear on refresh.
 - **Contextual Empty States**: Charming empty states for no search results, an empty favorites list, and an initial welcome hero section.
 
 ## Tech Stack 🛠
@@ -60,18 +59,18 @@ src/
 ├── App.jsx               # Main application component & state management
 ├── index.css             # Global styles and CSS variables
 └── components/           # React Components
-    ├── Navbar.jsx        # Navigation, tabs, dark mode toggle, and reading counter
+    ├── Navbar.jsx        # Navigation, tabs, and dark mode toggle
     ├── SearchBar.jsx     # Debounced search input
     ├── SortFilterBar.jsx # Dropdowns for sorting and decade filtering
     ├── BookGrid.jsx      # Grid layout for books & contextual empty states
-    └── BookCard.jsx      # Individual book display with read/favorite actions
+    └── BookCard.jsx      # Individual book display with favorite actions
 ```
 
 ## How It Works
 
 - **Data Fetching**: When you search, `App.jsx` calls `api.js` which fetches from the Open Library Search JSON API and formats the payload.
 - **Data Pipeline**: The fetched data flows through a chained set of pure functions in `utils.js`: `filterByQuery` → `filterByDecade` → `sortBooks` → `paginateBooks`. This is heavily optimized using React's `useMemo`.
-- **Persistence**: `useEffect` hooks listen to changes in your `readBooks`, `favorites`, and `darkMode` states and sync them to the browser's `localStorage`.
+- **Persistence**: `useEffect` hooks listen to changes in your `favorites` and `darkMode` states and sync them to the browser's `localStorage`.
 
 ---
 
